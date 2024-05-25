@@ -1,0 +1,88 @@
+import express, { Request, Response } from "express";
+import { prisma } from "./db.ts";
+import { CustomJWTPayload, CustomRequest } from "./types/index.js";
+
+export const bookingRouter = express.Router();
+bookingRouter.use(express.json());
+
+bookingRouter.get("/", async (req: CustomRequest, res: Response) => {
+    const { user_id } = req.user as CustomJWTPayload;
+    const query = await prisma.user.findFirst({
+        where: {
+            user_id: user_id,
+        },
+        select: {
+            bookings: true,
+        },
+    });
+    if (!query) {
+        return res.status(400).json({
+            error: "User not found!",
+        });
+    }
+    return res.status(200).json({ success: true, data: query.bookings });
+});
+
+bookingRouter.post("/createBooking", async (req: CustomRequest, res: Response) => {
+    const { user_id } = req.user as CustomJWTPayload;
+    const { professional_id, date, time } = req.body;
+
+    const sessionDuration = 45;
+    const consultation_date = date as Date;
+    const start_time = consultation_date;
+    const end_time = consultation_date;
+    end_time.setMinutes(end_time.getMinutes() + sessionDuration);
+    const booking_time = new Date();
+
+    // Create booking
+    const query = await prisma.booking.create({
+        data: {
+            booking_time: booking_time,
+            customer_id: user_id,
+        },
+    });
+
+    if (!query) {
+        return res.status(500).json({
+            error: "Something went wrong while creating booking!",
+        });
+    }
+
+    // Create consultation (45 minute consultation)
+    const consultationQuery = await prisma.consultation.create({
+        data: {
+            booking_id: query.booking_id,
+            date: date,
+            start_time: start_time,
+            end_time: end_time,
+            professional_id: professional_id,
+            customer_id: user_id,
+        },
+    });
+
+    if (!consultationQuery) {
+        return res.status(500).json({
+            error: "Something went wrong while creating consultation!",
+        });
+    }
+
+    return res.status(201).json({ success: true });
+});
+
+bookingRouter.delete("/deleteBooking", async (req: CustomRequest, res: Response) => {
+    const { user_id } = req.user as CustomJWTPayload;
+    const { booking_id } = req.body;
+
+    const query = await prisma.booking.delete({
+        where: {
+            booking_id: booking_id,
+        },
+    });
+    if (!query) {
+        return res.status(400).json({
+            error: "Booking not found!",
+        });
+    }
+
+    return res.status(200).json({ success: true, data: query });
+});
