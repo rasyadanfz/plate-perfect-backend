@@ -34,7 +34,26 @@ bookingRouter.post("/createBooking", async (req: CustomRequest, res: Response) =
     end_time.setMinutes(end_time.getMinutes() + sessionDuration);
     const booking_time = new Date();
 
-    // Create booking
+    // Check if there is already a consultation with that professional and date intersecting
+    const queryCheck = await prisma.consultation.findMany({
+        where: {
+            professional_id: professional_id,
+            date: date,
+            start_time: {
+                lte: end_time,
+            },
+            end_time: {
+                gte: start_time,
+            },
+        },
+    });
+
+    if (queryCheck.length > 0) {
+        return res.status(400).json({
+            error: "There is already a consultation with that professional at that time range!",
+        });
+    }
+
     const query = await prisma.booking.create({
         data: {
             booking_time: booking_time,
@@ -66,11 +85,23 @@ bookingRouter.post("/createBooking", async (req: CustomRequest, res: Response) =
         });
     }
 
+    // Create Chat Room for that Consultation
+    const chatRoomQuery = await prisma.chat.create({
+        data: {
+            consultation_id: consultationQuery.consultation_id,
+        },
+    });
+
+    if (!chatRoomQuery) {
+        return res.status(500).json({
+            error: "Something went wrong while creating chat room!",
+        });
+    }
+
     return res.status(201).json({ success: true });
 });
 
 bookingRouter.delete("/deleteBooking", async (req: CustomRequest, res: Response) => {
-    const { user_id } = req.user as CustomJWTPayload;
     const { booking_id } = req.body;
 
     const query = await prisma.booking.delete({

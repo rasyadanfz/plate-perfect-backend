@@ -117,9 +117,9 @@ model ChatMessage {
   message_id String @id @map("_id") @default(cuid())
   content String
   user User? @relation(fields: [user_id], references: [user_id])
-  user_id String
+  user_id String?
   professional Professional? @relation(fields: [professional_id], references: [professional_id])
-  professional_id String
+  professional_id String?
   chat Chat @relation(fields: [chat_id], references: [chat_id])
   chat_id String
   created_at DateTime

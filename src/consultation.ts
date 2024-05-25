@@ -36,3 +36,47 @@ consultationRouter.get("/", async (req: CustomRequest, res: Response) => {
     const data = query ? query : professionalQuery;
     return res.status(200).json({ success: true, data: data });
 });
+
+consultationRouter.delete("/deleteConsultation", async (req: CustomRequest, res: Response) => {
+    const { consultation_id } = req.body;
+
+    const query = await prisma.consultation.delete({
+        where: {
+            consultation_id: consultation_id,
+        },
+    });
+
+    if (!query) {
+        return res.status(500).json({
+            error: "Something went wrong while deleting consultation!",
+        });
+    }
+
+    // Delete chat room
+    const deleteChatRoom = await prisma.chat.delete({
+        where: {
+            consultation_id: consultation_id,
+        },
+    });
+
+    if (!deleteChatRoom) {
+        return res.status(500).json({
+            error: "Something went wrong while deleting chat room!",
+        });
+    }
+
+    // Delete chat messages
+    const deleteChatMessages = await prisma.chatMessage.deleteMany({
+        where: {
+            chat_id: deleteChatRoom.chat_id,
+        },
+    });
+
+    if (!deleteChatMessages) {
+        return res.status(500).json({
+            error: "Something went wrong while deleting chat messages!",
+        });
+    }
+
+    return res.status(200).json({ success: true, data: query });
+});
