@@ -1,0 +1,138 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  user_id String @id @map("_id") @default(cuid())
+  name String @default("Anonymous")
+  country String?
+  age Int?
+  gender String?
+  allergies String[]
+  medicalRecords String[]
+  date_of_birth DateTime?
+  email String @unique
+  phone_num String?
+  hashedPassword String
+  bookings Booking[]
+  payments Payment[]
+  consultations Consultation[]
+  chat_messages ChatMessage[]
+  refresh_tokens RefreshToken?
+  hasCompletedData Boolean @default(false)
+}
+
+enum ProfessionalRole {
+  NUTRISIONIST
+  CHEF
+}
+
+model Professional {
+  professional_id String @id @map("_id") @default(cuid())
+  name String @default("Anonymous Professional")
+  description String @default("Lorem ipsum")
+  role ProfessionalRole @default(NUTRISIONIST)
+  email String @unique
+  hashedPassword String
+  phone_num String?
+  balance Float @default(0)
+  experience Float @default(0)
+  consultations Consultation[]
+  chat_messages ChatMessage[]
+  summary Summary[]
+  hasCompletedData Boolean @default(false)
+}
+
+enum BookingStatus {
+  RESERVED
+  PAID
+  DONE
+}
+
+model Booking {
+  booking_id String @id @map("_id") @default(cuid())
+  booking_time DateTime
+  status BookingStatus @default(RESERVED)
+  customer User @relation(fields: [customer_id], references: [user_id])
+  customer_id String
+  payment Payment?
+  consultation Consultation?
+}
+
+enum PaymentMethod {
+  CASH
+  DEBIT_CARD
+  CREDIT_CARD
+}
+
+model Payment {
+  payment_id String @id @map("_id") @default(cuid())
+  booking Booking @relation(fields: [booking_id], references: [booking_id])
+  booking_id String @unique
+  amount Int
+  payment_time DateTime
+  method PaymentMethod
+  customer User @relation(fields: [customer_id], references: [user_id])
+  customer_id String
+}
+
+model Consultation {
+  consultation_id String @id @map("_id") @default(cuid())
+  booking Booking @relation(fields: [booking_id], references: [booking_id])
+  booking_id String @unique
+  date DateTime
+  start_time DateTime
+  end_time DateTime
+  customer User @relation(fields: [customer_id], references: [user_id])
+  customer_id String
+  professional Professional @relation(fields: [professional_id], references: [professional_id])
+  professional_id String
+  summary Summary?
+  chat Chat?
+}
+
+model Summary {
+  summary_id String @id @map("_id") @default(cuid())
+  content String
+  professional Professional @relation(fields: [professional_id], references: [professional_id])
+  professional_id String
+  consultation Consultation @relation(fields: [consultation_id], references: [consultation_id])
+  consultation_id String @unique
+}
+
+enum ReferenceSenderType {
+  USER
+  PROFESSIONAL
+}
+
+model Chat {
+  chat_id String @id @map("_id") @default(cuid())
+  consultation Consultation @relation(fields: [consultation_id], references: [consultation_id])
+  consultation_id String @unique
+  messages ChatMessage[]
+}
+
+model ChatMessage {
+  message_id String @id @map("_id") @default(cuid())
+  content String
+  user User? @relation(fields: [user_id], references: [user_id])
+  user_id String?
+  professional Professional? @relation(fields: [professional_id], references: [professional_id])
+  professional_id String?
+  chat Chat @relation(fields: [chat_id], references: [chat_id])
+  chat_id String
+  created_at DateTime
+  referenceType ReferenceSenderType
+}
+
+model RefreshToken {
+  id String @id @map("_id") @default(cuid())
+  token String
+  user User @relation(fields: [user_id], references: [user_id])
+  user_id String @unique
+}
