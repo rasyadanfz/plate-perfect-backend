@@ -1,11 +1,9 @@
 {
     "compilerOptions": {
-        "target": "es2016",
-        "module": "NodeNext",
-        "allowImportingTsExtensions": true,
-        "moduleResolution": "NodeNext",
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
         "outDir": "./dist",
-        "noEmit": true,
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
         "strict": true,

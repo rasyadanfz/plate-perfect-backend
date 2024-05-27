@@ -1,10 +1,10 @@
-import express, { Request, Response } from "express";
-import authenticateJWT from "./middleware.ts";
-import { authRouter, protectedAuthRouter } from "./auth.ts";
-import { profileRouter } from "./profile.ts";
-import { bookingRouter } from "./booking.ts";
-import { paymentRouter } from "./payment.ts";
-import { consultationRouter } from "./consultation.ts";
+import express from "express";
+import authenticateJWT from "./middleware.js";
+import { authRouter, protectedAuthRouter } from "./auth.js";
+import { profileRouter } from "./profile.js";
+import { bookingRouter } from "./booking.js";
+import { paymentRouter } from "./payment.js";
+import { consultationRouter } from "./consultation.js";
 
 // Router for unprotected routes
 export const apiRouter = express.Router();

@@ -3,7 +3,7 @@ import { Server } from "socket.io";
 import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
-import { apiRouter, protectedApiRouter } from "./api.ts";
+import { apiRouter, protectedApiRouter } from "./api.js";
 import cors from "cors";
 
 dotenv.config();
@@ -20,7 +20,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Server start
 const expressServer = app.listen(port, () => {
-    console.log(`[Server]: Server is running at http://localhost:${port}`);
+    console.log(`[Server]: Server is running at PORT:${port}`);
 });
 
 // Websocket IO for Chats

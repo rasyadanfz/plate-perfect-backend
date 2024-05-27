@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from "express";
-import { verifyJWT } from "./jwt.ts";
+import { Response, NextFunction } from "express";
+import { verifyJWT } from "./jwt.js";
 import { CustomJWTPayload, CustomRequest } from "./types/index.js";
 
 /**
