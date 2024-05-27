@@ -57,6 +57,7 @@ profileRouter.get("/", async (req: CustomRequest, res: Response) => {
 
 profileRouter.put("/user", async (req: CustomRequest, res: Response) => {
     const { user_id } = req.user as CustomJWTPayload;
+    console.log(user_id);
     const {
         email,
         name,
@@ -67,6 +68,7 @@ profileRouter.put("/user", async (req: CustomRequest, res: Response) => {
         medicalRecords,
         DoB,
         phoneNum,
+        firstCompleted,
     }: {
         email: string;
         name: string;
@@ -77,6 +79,7 @@ profileRouter.put("/user", async (req: CustomRequest, res: Response) => {
         medicalRecords: string[];
         DoB: Date;
         phoneNum: string;
+        firstCompleted?: boolean;
     } = req.body;
 
     const query = await prisma.user.update({
@@ -92,6 +95,7 @@ profileRouter.put("/user", async (req: CustomRequest, res: Response) => {
             medicalRecords: medicalRecords,
             date_of_birth: DoB,
             phone_num: phoneNum,
+            hasCompletedData: firstCompleted ? firstCompleted : true,
         },
     });
 
@@ -100,6 +104,8 @@ profileRouter.put("/user", async (req: CustomRequest, res: Response) => {
             error: "User not found!",
         });
     }
+
+    return res.status(200).json({ success: true });
 });
 
 profileRouter.put("/professional", async (req: CustomRequest, res: Response) => {
@@ -109,7 +115,16 @@ profileRouter.put("/professional", async (req: CustomRequest, res: Response) => 
         role,
         phone_num,
         experience,
-    }: { name: string; role: ProfessionalRole; phone_num: string; experience: number } = req.body;
+        description,
+        firstCompleted,
+    }: {
+        name: string;
+        role: ProfessionalRole;
+        phone_num: string;
+        experience: number;
+        description: string;
+        firstCompleted?: boolean;
+    } = req.body;
 
     const query = await prisma.professional.update({
         where: {
@@ -120,6 +135,8 @@ profileRouter.put("/professional", async (req: CustomRequest, res: Response) => 
             role: role,
             phone_num: phone_num,
             experience: experience,
+            description: description,
+            hasCompletedData: firstCompleted ? firstCompleted : true,
         },
     });
 
@@ -128,6 +145,8 @@ profileRouter.put("/professional", async (req: CustomRequest, res: Response) => 
             error: "User not found!",
         });
     }
+
+    return res.status(200).json({ success: true });
 });
 
 profileRouter.put("/professional/balance", async (req: CustomRequest, res: Response) => {

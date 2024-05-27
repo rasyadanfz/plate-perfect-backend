@@ -10,9 +10,10 @@ import { CustomJWTPayload, CustomRequest } from "./types/index.js";
  * @returns void
  */
 const authenticateJWT = (req: CustomRequest, res: Response, next: NextFunction) => {
-    const token = req.headers.authorization;
+    const token = req.headers.authorization?.split(" ")[1];
 
     if (!token) {
+        console.log("MIDDLEWARE CHECK TOKEN - 1: ", token);
         return res.status(401).json({
             error: "Unauthorized",
         });
@@ -23,6 +24,13 @@ const authenticateJWT = (req: CustomRequest, res: Response, next: NextFunction) 
         req.user = verify as CustomJWTPayload;
         next();
     } catch (err) {
+        const error = err as Error;
+        console.log("MIDDLEWARE CHECK TOKEN - 2: ", error);
+        if (error.name === "TokenExpiredError") {
+            return res.status(401).json({
+                error: "Token expired",
+            });
+        }
         return res.status(401).json({
             error: "Invalid token",
         });
