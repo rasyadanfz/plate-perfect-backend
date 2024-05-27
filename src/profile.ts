@@ -1,5 +1,5 @@
-import express, { Request, Response } from "express";
-import { prisma } from "./db.ts";
+import express, { Response } from "express";
+import { prisma } from "./db.js";
 import { CustomJWTPayload, CustomRequest } from "./types/index.js";
 import { ProfessionalRole } from "@prisma/client";
 

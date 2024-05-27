@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
-import { prisma } from "./db.ts";
+import { prisma } from "./db.js";
 import bcrypt from "bcrypt";
-import { signJWT, signJWTRefreshToken } from "./jwt.ts";
+import { signJWT, signJWTRefreshToken } from "./jwt.js";
 import { CustomJWTPayload, CustomRequest } from "./types/index.js";
 
 // Auth Router
