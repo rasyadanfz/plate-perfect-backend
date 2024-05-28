@@ -57,7 +57,7 @@ enum BookingStatus {
 model Booking {
   booking_id String @id @map("_id") @default(cuid())
   booking_time DateTime
-  status BookingStatus @default(RESERVED)
+  status BookingStatus @default(PAID)
   customer User @relation(fields: [customer_id], references: [user_id])
   customer_id String
   payment Payment?
