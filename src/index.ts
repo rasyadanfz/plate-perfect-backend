@@ -7,7 +7,8 @@ import { apiRouter, protectedApiRouter } from "./api.js";
 import cors from "cors";
 
 dotenv.config();
-const port = process.env.SERVER_PORT || 3000;
+const fetchport = process.env.PORT || 3000;
+const port = typeof fetchport === "string" ? parseInt(fetchport) : 3000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -19,7 +20,7 @@ app.use("/api", protectedApiRouter); // Protected routes
 app.use(express.static(path.join(__dirname, "public")));
 
 // Server start
-const expressServer = app.listen(port, () => {
+const expressServer = app.listen(port, "0.0.0.0", () => {
     console.log(`[Server]: Server is running at PORT:${port}`);
 });
 
