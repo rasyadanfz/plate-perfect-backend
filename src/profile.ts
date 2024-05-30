@@ -167,7 +167,15 @@ profileRouter.put("/professional/balance", async (req: CustomRequest, res: Respo
             professional_id: user_id,
         },
         data: {
-            balance: currBalance!.balance + balance,
+            balance: currBalance!.balance - balance,
         },
     });
+
+    if (!query) {
+        return res.status(400).json({
+            error: "User not found!",
+        });
+    }
+
+    return res.status(200).json({ success: true });
 });

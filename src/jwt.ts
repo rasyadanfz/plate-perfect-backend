@@ -7,7 +7,7 @@ const refresh_secret = process.env.JWT_REFRESH_TOKEN_SECRET;
 
 export function signJWT(payload: CustomJWTPayload) {
     return jsonwebtoken.sign(payload, access_secret!, {
-        expiresIn: "1d",
+        expiresIn: "3d",
     });
 }
 
