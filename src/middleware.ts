@@ -11,7 +11,6 @@ import { CustomJWTPayload, CustomRequest } from "./types/index.js";
  */
 const authenticateJWT = (req: CustomRequest, res: Response, next: NextFunction) => {
     const token = req.headers.authorization?.split(" ")[1];
-
     if (!token) {
         console.log("MIDDLEWARE CHECK TOKEN - 1: ", token);
         return res.status(401).json({

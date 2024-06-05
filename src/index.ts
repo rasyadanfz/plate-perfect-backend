@@ -20,7 +20,7 @@ app.use("/api", protectedApiRouter); // Protected routes
 app.use(express.static(path.join(__dirname, "public")));
 
 // Server start
-const expressServer = app.listen(port, "0.0.0.0", () => {
+const expressServer = app.listen(port, () => {
     console.log(`[Server]: Server is running at PORT:${port}`);
 });
 

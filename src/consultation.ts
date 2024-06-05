@@ -35,6 +35,11 @@ consultationRouter.get("/", async (req: CustomRequest, res: Response) => {
 
     const data = query ? query : professionalQuery;
     return res.status(200).json({ success: true, data: data });
+})
+
+consultationRouter.get("/allConsultation", async  (req: CustomRequest, res: Response) => {
+    const {ID} = req.query;
+    res.status(200).json({success: true, data: ID});
 });
 
 consultationRouter.delete("/deleteConsultation", async (req: CustomRequest, res: Response) => {
