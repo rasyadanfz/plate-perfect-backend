@@ -1,6 +1,8 @@
 import express, { Response } from "express";
 import { prisma } from "./db.js";
 import { CustomJWTPayload, CustomRequest } from "./types/index.js";
+import { extractStartAndEndTime } from "./helper/booking.js";
+import { decode } from "punycode";
 
 export const bookingRouter = express.Router();
 bookingRouter.use(express.json());
@@ -25,13 +27,15 @@ bookingRouter.get("/", async (req: CustomRequest, res: Response) => {
 
 bookingRouter.post("/createBooking", async (req: CustomRequest, res: Response) => {
     const { user_id } = req.user as CustomJWTPayload;
-    const { professional_id, date, time } = req.body;
+    const { professional_id, dateOfAppointment } = req.body;
 
     const sessionDuration = 45;
-    const consultation_date = date as Date;
-    const start_time = consultation_date;
-    const end_time = consultation_date;
-    end_time.setMinutes(end_time.getMinutes() + sessionDuration);
+    console.log(dateOfAppointment)
+    const consultation_date = dateOfAppointment.appointmentDate;
+    const date = new Date(consultation_date);
+    const decodeHour = extractStartAndEndTime(dateOfAppointment    );
+    const start_time = decodeHour.startTime
+    const end_time = decodeHour.endTime
     const booking_time = new Date();
 
     // Check if there is already a consultation with that professional and date intersecting
@@ -47,6 +51,7 @@ bookingRouter.post("/createBooking", async (req: CustomRequest, res: Response) =
             },
         },
     });
+    
 
     if (queryCheck.length > 0) {
         return res.status(400).json({
@@ -98,7 +103,7 @@ bookingRouter.post("/createBooking", async (req: CustomRequest, res: Response) =
         });
     }
 
-    return res.status(201).json({ success: true });
+    return res.status(201).json({ success: true , query:query});
 });
 
 bookingRouter.delete("/deleteBooking", async (req: CustomRequest, res: Response) => {
