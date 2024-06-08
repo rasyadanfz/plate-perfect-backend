@@ -37,9 +37,25 @@ consultationRouter.get("/", async (req: CustomRequest, res: Response) => {
     return res.status(200).json({ success: true, data: data });
 })
 
-consultationRouter.get("/allConsultation", async  (req: CustomRequest, res: Response) => {
-    const {ID} = req.query;
-    res.status(200).json({success: true, data: ID});
+consultationRouter.post("/takeAllConsultation", async  (req: CustomRequest, res: Response) => {
+
+
+    const {professional_id} = req.body;
+    const query = await prisma.consultation.findMany({
+        where: {
+            professional_id: professional_id,
+        },
+    });
+
+
+    return res.status(200).json({
+        succes:true,
+        data: query
+    })
+
+
+
+
 });
 
 consultationRouter.delete("/deleteConsultation", async (req: CustomRequest, res: Response) => {

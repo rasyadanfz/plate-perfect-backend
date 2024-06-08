@@ -37,6 +37,11 @@ bookingRouter.post("/createBooking", async (req: CustomRequest, res: Response) =
     const end_time = decodeHour.endTime
     const booking_time = new Date();
 
+    console.log("dateOfAppointment",dateOfAppointment)
+    console.log("DECODE HOUR",decodeHour)
+    console.log("START TIME",start_time)    
+    console.log("END TIME",end_time)    
+
     // Check if there is already a consultation with that professional and date intersecting
     const queryCheck = await prisma.consultation.findMany({
         where: {
@@ -58,7 +63,6 @@ bookingRouter.post("/createBooking", async (req: CustomRequest, res: Response) =
         });
     }
 
-    console.log("professional_id",professional_id)
 
     const query = await prisma.booking.create({
         data: {     
@@ -73,8 +77,6 @@ bookingRouter.post("/createBooking", async (req: CustomRequest, res: Response) =
         });
     }
 
-
-    console.log("query",query,"professional_id",professional_id)    
 
     
     
