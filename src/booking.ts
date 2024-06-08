@@ -30,7 +30,6 @@ bookingRouter.post("/createBooking", async (req: CustomRequest, res: Response) =
     const { professional_id, dateOfAppointment } = req.body;
 
     const sessionDuration = 45;
-    console.log(dateOfAppointment)
     const consultation_date = dateOfAppointment.appointmentDate;
     const date = new Date(consultation_date);
     const decodeHour = extractStartAndEndTime(dateOfAppointment    );
@@ -59,8 +58,10 @@ bookingRouter.post("/createBooking", async (req: CustomRequest, res: Response) =
         });
     }
 
+    console.log("professional_id",professional_id)
+
     const query = await prisma.booking.create({
-        data: {
+        data: {     
             booking_time: booking_time,
             customer_id: user_id,
         },
@@ -72,15 +73,20 @@ bookingRouter.post("/createBooking", async (req: CustomRequest, res: Response) =
         });
     }
 
+
+    console.log("query",query,"professional_id",professional_id)    
+
+    
+    
     // Create consultation (45 minute consultation)
     const consultationQuery = await prisma.consultation.create({
         data: {
-            booking_id: query.booking_id,
-            date: date,
-            start_time: start_time,
-            end_time: end_time,
-            professional_id: professional_id,
-            customer_id: user_id,
+            booking_id:query.booking_id,
+            date:date,
+            start_time:start_time,
+            end_time:end_time,
+            customer_id:user_id,
+            professional_id:professional_id,
         },
     });
 
@@ -104,6 +110,7 @@ bookingRouter.post("/createBooking", async (req: CustomRequest, res: Response) =
     }
 
     return res.status(201).json({ success: true , query:query});
+    
 });
 
 bookingRouter.delete("/deleteBooking", async (req: CustomRequest, res: Response) => {
