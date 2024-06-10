@@ -5,6 +5,9 @@ import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 import { apiRouter, protectedApiRouter } from "./api.js";
 import cors from "cors";
+import { activateUser, getUserActiveRoom, userLeavesApp } from "./chatRoom.js";
+import { Professional, User } from "@prisma/client";
+import { buildAdminMsg, getUser } from "./helpers/chatHelper.js";
 
 dotenv.config();
 const fetchport = process.env.PORT || 3000;
@@ -20,9 +23,11 @@ app.use("/api", protectedApiRouter); // Protected routes
 app.use(express.static(path.join(__dirname, "public")));
 
 // Server start
-const expressServer = app.listen(port, "0.0.0.0", () => {
+const expressServer = app.listen(port, () => {
     console.log(`[Server]: Server is running at PORT:${port}`);
 });
+
+const ADMIN = "Admin";
 
 // Websocket IO for Chats
 const io = new Server(expressServer, {
@@ -41,20 +46,68 @@ io.on("connection", (socket) => {
     });
 
     // When user disconnects - to all others
-    socket.on("disconnect", (reason) => {
-        socket.broadcast.emit("otherconnection", `User disonnected: ${socket.id}`);
-        console.log(`[Server]: User Disconnected: ${socket.id}`);
+    socket.on("disconnect", async (userId: string, role: string) => {
+        const data = await userLeavesApp(userId);
+        if (data) {
+            const userData = role === "USER" ? (data[0] as User) : (data[0] as Professional);
+            const prevChatRoom = data[1] as string;
+            if (prevChatRoom) {
+                io.to(prevChatRoom).emit("message", buildAdminMsg(`${userData.name} has left the room`));
+            }
+        }
     });
 
     // Upon connection - only to user
-    socket.emit("selfconnection", "Welcome to Chat App!");
+    socket.emit("selfconnection", buildAdminMsg("Welcome to Consultation Room!"));
+    socket.on(
+        "enterRoom",
+        async ({
+            userId,
+            name,
+            roomId,
+            role,
+        }: {
+            userId: string;
+            name: string;
+            roomId: string;
+            role: string;
+        }) => {
+            // Leave previous room
+            const prevRoom = await getUserActiveRoom(userId, role);
+            if (prevRoom) {
+                socket.leave(prevRoom);
+                io.to(prevRoom).emit("message", buildAdminMsg(`${name} has left the consultation room`));
+            }
+
+            const user = await activateUser(userId, name, roomId);
+            let userData;
+            if (role === "USER") {
+                userData = user as User;
+            } else if (role === "PROFESSIONAL") {
+                userData = user as Professional;
+            }
+            // Join room
+            socket.join(userData!.currentChatRoom!);
+
+            // To the user who joined
+            socket.emit("message", buildAdminMsg("You have joined the consultation room"));
+
+            // To everyone else
+            socket.broadcast
+                .to(roomId)
+                .emit("message", buildAdminMsg(`${userData!.name} has joined the room`));
+        }
+    );
 
     // Upon connection - to all others
     socket.broadcast.emit("otherconnection", `User Connected: ${socket.id}`);
 
     // Listen for activity
-    socket.on("activity", (name) => {
-        socket.broadcast.emit("activity", name);
+    socket.on("activity", async (userId: string, role: string, name: string) => {
+        const room = await getUserActiveRoom(userId, role);
+        if (room) {
+            socket.broadcast.to(room).emit("activity", name);
+        }
     });
 });
 
