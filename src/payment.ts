@@ -26,6 +26,7 @@ paymentRouter.get("/", async (req: CustomRequest, res: Response) => {
 });
 
 paymentRouter.post("/createPayment", async (req: CustomRequest, res: Response) => {
+    
     const { user_id } = req.user as CustomJWTPayload;
     const { booking_id, amount, method } = req.body;
     const payment_time = new Date();
