@@ -5,6 +5,7 @@ import { profileRouter } from "./profile.js";
 import { bookingRouter } from "./booking.js";
 import { paymentRouter } from "./payment.js";
 import { consultationRouter } from "./consultation.js";
+import { professionalRouter } from "./professional.js";
 
 // Router for unprotected routes
 export const apiRouter = express.Router();
@@ -18,3 +19,4 @@ protectedApiRouter.use("/booking", bookingRouter);
 protectedApiRouter.use("/consultation", consultationRouter);
 protectedApiRouter.use("/payment", paymentRouter);
 protectedApiRouter.use("/profile", profileRouter);
+protectedApiRouter.use("/professional",professionalRouter);

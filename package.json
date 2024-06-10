@@ -12,6 +12,7 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "@dgreasi/react-native-time-slot-picker": "^0.2.0",
         "@paralleldrive/cuid2": "^2.2.2",
         "@prisma/client": "^5.14.0",
         "@supabase/supabase-js": "^2.42.5",
