@@ -35,27 +35,40 @@ consultationRouter.get("/", async (req: CustomRequest, res: Response) => {
 
     const data = query ? query : professionalQuery;
     return res.status(200).json({ success: true, data: data });
-})
+});
 
-consultationRouter.post("/takeAllConsultation", async  (req: CustomRequest, res: Response) => {
+consultationRouter.get(
+    "/getConsultationWithBookingId/:booking_id",
+    async (req: CustomRequest, res: Response) => {
+        const { user_id } = req.user as CustomJWTPayload;
+        const { booking_id } = req.params;
+        const query = await prisma.consultation.findFirst({
+            where: {
+                booking_id: booking_id,
+            },
+        });
 
+        if (!query) {
+            return res.status(400).json({
+                error: "Consultation with booking ID not found!",
+            });
+        }
+        return res.status(200).json({ success: true, data: query });
+    }
+);
 
-    const {professional_id} = req.body;
+consultationRouter.post("/takeAllConsultation", async (req: CustomRequest, res: Response) => {
+    const { professional_id } = req.body;
     const query = await prisma.consultation.findMany({
         where: {
             professional_id: professional_id,
         },
     });
 
-
     return res.status(200).json({
-        succes:true,
-        data: query
-    })
-
-
-
-
+        succes: true,
+        data: query,
+    });
 });
 
 consultationRouter.delete("/deleteConsultation", async (req: CustomRequest, res: Response) => {
