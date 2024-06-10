@@ -55,6 +55,22 @@ profileRouter.get("/", async (req: CustomRequest, res: Response) => {
     return res.status(200).json({ success: true, data: data });
 });
 
+profileRouter.get("/user/:id", async (req: CustomRequest, res: Response) => {
+    const query = await prisma.user.findUnique({
+        where: {
+            user_id: req.params.id,
+        },
+    });
+
+    if (!query) {
+        return res.status(400).json({
+            error: "User not found!",
+        });
+    }
+
+    return res.status(200).json({ success: true, data: query });
+});
+
 profileRouter.put("/user", async (req: CustomRequest, res: Response) => {
     const { user_id } = req.user as CustomJWTPayload;
     console.log(user_id);

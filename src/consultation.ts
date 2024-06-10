@@ -57,6 +57,71 @@ consultationRouter.get(
     }
 );
 
+consultationRouter.get("/professionalConsultationList", async (req: CustomRequest, res: Response) => {
+    const { user_id } = req.user as CustomJWTPayload;
+
+    const query = await prisma.consultation.findMany({
+        where: {
+            professional_id: user_id,
+        },
+        orderBy: {
+            date: "desc",
+        },
+    });
+
+    if (!query) {
+        return res.status(400).json({
+            error: "No consultation with professional ID found!",
+        });
+    }
+    return res.status(200).json({ success: true, data: query });
+});
+
+consultationRouter.get("/professionalNextSchedule", async (req: CustomRequest, res: Response) => {
+    const { user_id } = req.user as CustomJWTPayload;
+
+    const query = await prisma.consultation.findMany({
+        where: {
+            professional_id: user_id,
+        },
+        orderBy: [
+            {
+                date: "asc",
+            },
+            {
+                start_time: "asc",
+            },
+        ],
+    });
+
+    if (!query) {
+        return res.status(400).json({
+            error: "No consultation with professional ID found!",
+        });
+    }
+
+    const bookingList = await Promise.all(
+        query.map((consultation) => {
+            return prisma.booking.findUnique({
+                where: {
+                    booking_id: consultation.booking_id,
+                },
+            });
+        })
+    );
+
+    const paidBookingList = bookingList.filter((booking) => booking!.status === "PAID");
+    const set = new Set();
+
+    paidBookingList.forEach((booking) => {
+        set.add(booking!.booking_id);
+    });
+
+    const filteredQuery = query.filter((consultation) => set.has(consultation.booking_id));
+
+    return res.status(200).json({ success: true, data: filteredQuery });
+});
+
 consultationRouter.post("/takeAllConsultation", async (req: CustomRequest, res: Response) => {
     const { professional_id } = req.body;
     const query = await prisma.consultation.findMany({
