@@ -5,6 +5,8 @@ import { profileRouter } from "./profile.js";
 import { bookingRouter } from "./booking.js";
 import { paymentRouter } from "./payment.js";
 import { consultationRouter } from "./consultation.js";
+import { chatMessageRouter } from "./chatMessage.js";
+import { chatRoomRouter } from "./chatRoom.js";
 import { professionalRouter } from "./professional.js";
 
 // Router for unprotected routes
@@ -19,4 +21,6 @@ protectedApiRouter.use("/booking", bookingRouter);
 protectedApiRouter.use("/consultation", consultationRouter);
 protectedApiRouter.use("/payment", paymentRouter);
 protectedApiRouter.use("/profile", profileRouter);
-protectedApiRouter.use("/professional",professionalRouter);
+protectedApiRouter.use("/chatMsg", chatMessageRouter);
+protectedApiRouter.use("/chatRoom", chatRoomRouter);
+protectedApiRouter.use("/professional", professionalRouter);

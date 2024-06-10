@@ -25,6 +25,7 @@ model User {
   chat_messages ChatMessage[]
   refresh_tokens RefreshToken?
   hasCompletedData Boolean @default(false)
+  currentChatRoom String?
 }
 
 enum ProfessionalRole {
@@ -46,6 +47,7 @@ model Professional {
   chat_messages ChatMessage[]
   summary Summary[]
   hasCompletedData Boolean @default(false)
+  currentChatRoom String?
 }
 
 enum BookingStatus {
@@ -60,6 +62,7 @@ model Booking {
   status BookingStatus @default(PAID)
   customer User @relation(fields: [customer_id], references: [user_id])
   customer_id String
+  type String
   payment Payment?
   consultation Consultation?
 }

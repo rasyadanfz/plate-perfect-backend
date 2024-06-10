@@ -5,29 +5,45 @@ import { CustomJWTPayload, CustomRequest } from "./types/index.js";
 export const professionalRouter = express.Router();
 professionalRouter.use(express.json());
 
-
-professionalRouter.get("/getAllProfessional", async  (req: CustomRequest, res: Response) =>{
+professionalRouter.get("/getAllProfessional", async (req: CustomRequest, res: Response) => {
     // get All Professional
     const professionalQuery = await prisma.professional.findMany();
 
-    if(!professionalQuery){
+    if (!professionalQuery) {
         return res.status(404).json({
-            "error":"Data not Found"
-        })
+            error: "Data not Found",
+        });
     }
 
-    return res.status(200).json({success: true, data: professionalQuery});  
-})
+    return res.status(200).json({ success: true, data: professionalQuery });
+});
 
-professionalRouter.get("/getOneProfessional", async  (req: CustomRequest, res: Response) =>{
+professionalRouter.get("/getProfId/:professional_id", async (req: CustomRequest, res: Response) => {
+    const { professional_id } = req.params;
+    const professionalQuery = await prisma.professional.findUnique({
+        where: {
+            professional_id: professional_id,
+        },
+    });
+
+    if (!professionalQuery) {
+        return res.status(404).json({
+            error: "Data not Found",
+        });
+    }
+
+    return res.status(200).json({ success: true, data: professionalQuery });
+});
+
+professionalRouter.get("/getOneProfessional", async (req: CustomRequest, res: Response) => {
     // get All Professional
     const professionalQuery = await prisma.professional.findMany();
 
-    if(!professionalQuery){
+    if (!professionalQuery) {
         return res.status(404).json({
-            "error":"Data not Found"
-        })
+            error: "Data not Found",
+        });
     }
 
-    return res.status(200).json({success: true, data: professionalQuery[0]});  
-})
+    return res.status(200).json({ success: true, data: professionalQuery[0] });
+});
