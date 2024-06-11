@@ -78,6 +78,32 @@ consultationRouter.get(
     }
 );
 
+consultationRouter.get(
+    "/getConsultationWithChatId/:chat_id",
+    async (req: CustomRequest, res: Response) => {
+        const { chat_id } = req.params;
+        const query = await prisma.chat.findFirst({
+            where: {
+                chat_id: chat_id,
+            },
+        });
+
+        const queryConsultation = await prisma.consultation.findFirst({
+            where: {
+                consultation_id: query?.consultation_id,
+            },
+        });
+
+        if (!query || !queryConsultation) {
+            return res.status(400).json({
+                error: "Consultation with chat ID not found!",
+            });
+        }
+
+        return res.status(200).json({ success: true, data: queryConsultation });
+    }
+);
+
 consultationRouter.get("/professionalConsultationList", async (req: CustomRequest, res: Response) => {
     const { user_id } = req.user as CustomJWTPayload;
 
@@ -131,6 +157,9 @@ consultationRouter.get("/professionalNextSchedule", async (req: CustomRequest, r
         })
     );
 
+    if (!bookingList.length) {
+        return res.status(200).json({ success: true, data: [] });
+    }
     const paidBookingList = bookingList.filter((booking) => booking!.status === "PAID");
     const set = new Set();
 

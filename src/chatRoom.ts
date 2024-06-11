@@ -28,6 +28,53 @@ chatRoomRouter.get("/:consultationId", async (req: CustomRequest, res: Response)
     return res.status(200).json({ success: true, data: query });
 });
 
+chatRoomRouter.get(
+    "/getRoomWithConsultationId/:consultation_id",
+    async (req: CustomRequest, res: Response) => {
+        const { user_id } = req.user as CustomJWTPayload;
+        const { consultation_id } = req.params;
+
+        const query = await prisma.chat.findFirst({
+            where: {
+                consultation_id: consultation_id,
+            },
+            select: {
+                messages: true,
+            },
+        });
+
+        if (!query) {
+            return res.status(400).json({
+                error: "Chat not found!",
+            });
+        }
+
+        return res.status(200).json({ success: true, data: query });
+    }
+);
+
+chatRoomRouter.get("/room/:roomId", async (req: CustomRequest, res: Response) => {
+    const { user_id } = req.user as CustomJWTPayload;
+    const { roomId } = req.params;
+
+    const query = await prisma.chat.findFirst({
+        where: {
+            chat_id: roomId,
+        },
+        select: {
+            messages: true,
+        },
+    });
+
+    if (!query) {
+        return res.status(400).json({
+            error: "Chat not found!",
+        });
+    }
+
+    return res.status(200).json({ success: true, data: query });
+});
+
 chatRoomRouter.post("/:consultationId", async (req: CustomRequest, res: Response) => {
     const { user_id } = req.user as CustomJWTPayload;
     const { consultationId } = req.params;

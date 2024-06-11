@@ -22,6 +22,7 @@ bookingRouter.get("/", async (req: CustomRequest, res: Response) => {
             error: "User not found!",
         });
     }
+    console.log(query);
     return res.status(200).json({ success: true, data: query.bookings });
 });
 
@@ -245,6 +246,28 @@ bookingRouter.get("/:book_id", async (req: CustomRequest, res: Response) => {
     if (!query) {
         return res.status(400).json({
             error: "Booking not found!",
+        });
+    }
+
+    return res.status(200).json({ success: true, data: query });
+});
+
+bookingRouter.put("/:book_id", async (req: CustomRequest, res: Response) => {
+    const { status } = req.body;
+    const { book_id } = req.params;
+
+    const query = await prisma.booking.update({
+        where: {
+            booking_id: book_id,
+        },
+        data: {
+            status: status,
+        },
+    });
+
+    if (!query) {
+        return res.status(400).json({
+            error: "Booking update failed!",
         });
     }
 

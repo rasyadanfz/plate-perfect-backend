@@ -8,6 +8,7 @@ import cors from "cors";
 import { activateUser, getUserActiveRoom, userLeavesApp } from "./chatRoom.js";
 import { Professional, User } from "@prisma/client";
 import { buildAdminMsg, getUser } from "./helpers/chatHelper.js";
+import { prisma } from "./db.js";
 
 dotenv.config();
 const fetchport = process.env.PORT || 3000;
@@ -54,6 +55,45 @@ io.on("connection", (socket) => {
             if (prevChatRoom) {
                 io.to(prevChatRoom).emit("message", buildAdminMsg(`${userData.name} has left the room`));
             }
+        }
+    });
+    socket.on("endByUser", async ({ id, role }: { id: string; role: string }) => {
+        const getUserRoom = await getUserActiveRoom(id, role);
+        if (getUserRoom) {
+            socket.leave(getUserRoom);
+            io.to(getUserRoom).emit("endByUser");
+        }
+    });
+
+    socket.on("endByProfessional", async ({ id, role }: { id: string; role: string }) => {
+        const getUserRoom = await getUserActiveRoom(id, role);
+        if (getUserRoom) {
+            socket.leave(getUserRoom);
+            io.to(getUserRoom).emit("endByProfessional");
+        }
+    });
+
+    socket.on("leaveRoom", async ({ id, role }: { id: string; role: string }) => {
+        let user = await getUser(id);
+        if (role === "USER") {
+            await prisma.user.update({
+                where: {
+                    user_id: id,
+                },
+                data: {
+                    currentChatRoom: null,
+                },
+            });
+        } else {
+            user = user as Professional;
+            await prisma.professional.update({
+                where: {
+                    professional_id: id,
+                },
+                data: {
+                    currentChatRoom: null,
+                },
+            });
         }
     });
 

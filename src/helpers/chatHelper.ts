@@ -1,5 +1,6 @@
 import { ReferenceSenderType } from "@prisma/client";
 import { prisma } from "../db";
+import { createId } from "@paralleldrive/cuid2";
 
 export interface Message {
     sender_id?: string;
@@ -24,8 +25,10 @@ export function buildMsg({ sender_id, sender_name, text, senderType }: Message) 
 
 export function buildAdminMsg(text: string) {
     return {
+        message_id: createId(),
         name: "ADMIN",
-        text,
+        user_id: "ADMIN",
+        content: text,
         created_at: new Intl.DateTimeFormat("default", {
             hour: "numeric",
             minute: "numeric",
