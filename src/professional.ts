@@ -20,15 +20,15 @@ professionalRouter.get("/getAllProfessional", async (req: CustomRequest, res: Re
 
 professionalRouter.get("/getProfId/:professional_id", async (req: CustomRequest, res: Response) => {
     const { professional_id } = req.params;
-    const professionalQuery = await prisma.professional.findUnique({
+    const professionalQuery = await prisma.professional.findFirst({
         where: {
             professional_id: professional_id,
         },
     });
 
     if (!professionalQuery) {
-        return res.status(404).json({
-            error: "Data not Found",
+        return res.status(400).json({
+            message: "Data not Found",
         });
     }
 

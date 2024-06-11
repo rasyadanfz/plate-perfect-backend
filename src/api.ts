@@ -8,6 +8,7 @@ import { consultationRouter } from "./consultation.js";
 import { chatMessageRouter } from "./chatMessage.js";
 import { chatRoomRouter } from "./chatRoom.js";
 import { professionalRouter } from "./professional.js";
+import { summaryRouter } from "./summary.js";
 
 // Router for unprotected routes
 export const apiRouter = express.Router();
@@ -24,3 +25,4 @@ protectedApiRouter.use("/profile", profileRouter);
 protectedApiRouter.use("/chatMsg", chatMessageRouter);
 protectedApiRouter.use("/chatRoom", chatRoomRouter);
 protectedApiRouter.use("/professional", professionalRouter);
+protectedApiRouter.use("/summary",summaryRouter)
