@@ -210,3 +210,22 @@ bookingRouter.get("/onePaidBooking", async (req: CustomRequest, res: Response) =
 
     return res.status(200).json({ success: true, data: query });
 });
+
+bookingRouter.get("/finishedBooking", async(req:CustomRequest, res:Response)=>{
+    const {user_id} = req.body;
+
+    const query = await prisma.booking.findMany({
+        where:{
+            status:"DONE",
+        }, orderBy:{
+            booking_time:"desc",
+        }
+    })
+
+    if(query){
+        return res.status(200).json({
+            success:true,
+            data:query
+        })
+    }else res.status(400).json({error:"There is error"})
+})
