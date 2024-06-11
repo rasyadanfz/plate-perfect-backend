@@ -139,7 +139,7 @@ bookingRouter.delete("/deleteBooking", async (req: CustomRequest, res: Response)
 });
 
 bookingRouter.get("/userHistory", async (req: CustomRequest, res: Response) => {
-    const { user_id } = req.body;
+    const { user_id } = req.user as CustomJWTPayload;
 
     const query = await prisma.booking.findMany({
         where: {
@@ -160,7 +160,7 @@ bookingRouter.get("/userHistory", async (req: CustomRequest, res: Response) => {
 });
 
 bookingRouter.get("/oneUserHistory", async (req: CustomRequest, res: Response) => {
-    const { user_id } = req.body;
+    const { user_id } = req.user as CustomJWTPayload;
 
     const query = await prisma.booking.findMany({
         where: {
@@ -186,7 +186,8 @@ bookingRouter.get("/oneUserHistory", async (req: CustomRequest, res: Response) =
 });
 
 bookingRouter.get("/onePaidBooking", async (req: CustomRequest, res: Response) => {
-    const { user_id } = req.body;
+    const { user_id } = req.user as CustomJWTPayload;
+    console.log(user_id);
 
     const query = await prisma.booking.findMany({
         where: {
@@ -211,6 +212,7 @@ bookingRouter.get("/onePaidBooking", async (req: CustomRequest, res: Response) =
     return res.status(200).json({ success: true, data: query });
 });
 
+
 bookingRouter.get("/finishedBooking", async(req:CustomRequest, res:Response)=>{
     const {user_id} = req.body;
 
@@ -229,3 +231,22 @@ bookingRouter.get("/finishedBooking", async(req:CustomRequest, res:Response)=>{
         })
     }else res.status(400).json({error:"There is error"})
 })
+
+bookingRouter.get("/:book_id", async (req: CustomRequest, res: Response) => {
+    const { user_id } = req.body;
+    const { book_id } = req.params;
+
+    const query = await prisma.booking.findFirst({
+        where: {
+            booking_id: book_id,
+        },
+    });
+
+    if (!query) {
+        return res.status(400).json({
+            error: "Booking not found!",
+        });
+    }
+
+    return res.status(200).json({ success: true, data: query });
+});
