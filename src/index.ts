@@ -28,8 +28,6 @@ const expressServer = app.listen(port, "0.0.0.0", () => {
     console.log(`[Server]: Server is running at PORT:${port}`);
 });
 
-const ADMIN = "Admin";
-
 // Websocket IO for Chats
 const io = new Server(expressServer, {
     cors: {
