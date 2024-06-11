@@ -9,6 +9,8 @@ import { chatMessageRouter } from "./chatMessage.js";
 import { chatRoomRouter } from "./chatRoom.js";
 import { professionalRouter } from "./professional.js";
 import { summaryRouter } from "./summary.js";
+import { Request,Response } from "express";
+import { prisma } from "./db.js";
 
 // Router for unprotected routes
 export const apiRouter = express.Router();

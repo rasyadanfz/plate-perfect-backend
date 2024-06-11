@@ -8,6 +8,7 @@ import cors from "cors";
 import { activateUser, getUserActiveRoom, userLeavesApp } from "./chatRoom.js";
 import { Professional, User } from "@prisma/client";
 import { buildAdminMsg, getUser } from "./helpers/chatHelper.js";
+import { prisma } from "./db.js";
 
 dotenv.config();
 const fetchport = process.env.PORT || 3000;
@@ -21,6 +22,18 @@ app.use(cors());
 app.use("/api", apiRouter); // Unprotected routes
 app.use("/api", protectedApiRouter); // Protected routes
 app.use(express.static(path.join(__dirname, "public")));
+app.get("/delatt", async(Req:Request, res:Response)=>{
+    const del3 = await prisma.chatMessage.deleteMany()
+    const del2 = await prisma.chat.deleteMany();
+    const del7 = await prisma.summary.deleteMany()
+    const del5 = await prisma.payment.deleteMany();
+    const del4 = await prisma.consultation.deleteMany()
+    const del1 = await prisma.booking.deleteMany();
+    const del6 =  await prisma.refreshToken.deleteMany()
+
+   return res.status(200)
+    
+})
 
 // Server start
 const expressServer = app.listen(port, () => {
