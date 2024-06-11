@@ -42,7 +42,6 @@ chatRoomRouter.get(
                 messages: true,
             },
         });
-
         if (!query) {
             return res.status(400).json({
                 error: "Chat not found!",

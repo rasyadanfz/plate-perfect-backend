@@ -220,6 +220,7 @@ bookingRouter.get("/finishedBooking", async(req:CustomRequest, res:Response)=>{
     const query = await prisma.booking.findMany({
         where:{
             status:"DONE",
+            customer_id:user_id
         }, orderBy:{
             booking_time:"desc",
         }

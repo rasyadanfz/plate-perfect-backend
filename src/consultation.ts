@@ -38,6 +38,29 @@ consultationRouter.get("/", async (req: CustomRequest, res: Response) => {
 });
 
 consultationRouter.get(
+    "/getAllConsultationWithProfId/:professional_id", async(req:CustomRequest,res:Response)=>{
+
+        const {professional_id} = req.params;
+        const query = await prisma.consultation.findMany({
+            where:{
+                professional_id,
+            },
+            orderBy:{
+                date: "desc"
+            }
+        })
+
+
+        if(!query){
+            return res.status(404).json({error:"Data not found"})
+        }else{
+            return res.status(200).json({message:"succes",data:query})
+        }
+    }
+)
+
+
+consultationRouter.get(
     "/getConsultationWithConsultationId/:consultation_id",
     async (req:CustomRequest, res:Response)=>{
         const {consultation_id} = req.params;
