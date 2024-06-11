@@ -1,5 +1,5 @@
 import { ReferenceSenderType } from "@prisma/client";
-import { prisma } from "../db";
+import { prisma } from "../db.js";
 import { createId } from "@paralleldrive/cuid2";
 
 export interface Message {
