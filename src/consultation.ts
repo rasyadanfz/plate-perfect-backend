@@ -38,6 +38,27 @@ consultationRouter.get("/", async (req: CustomRequest, res: Response) => {
 });
 
 consultationRouter.get(
+    "/getConsultationWithConsultationId/:consultation_id",
+    async (req:CustomRequest, res:Response)=>{
+        const {consultation_id} = req.params;
+
+        const query = await prisma.consultation.findUnique({
+            where:{
+                consultation_id
+            }
+        })
+
+        if(!query){
+            return res.status(44).json({
+                errpr:"Consultation with consultation_id not found"
+            })
+        }
+
+        res.status(200).json({success:true,data:query});
+    }
+)
+
+consultationRouter.get(
     "/getConsultationWithBookingId/:booking_id",
     async (req: CustomRequest, res: Response) => {
         const { user_id } = req.user as CustomJWTPayload;

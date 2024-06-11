@@ -20,3 +20,4 @@ export function signJWTRefreshToken(payload: CustomJWTPayload) {
         expiresIn: "7d",
     });
 }
+

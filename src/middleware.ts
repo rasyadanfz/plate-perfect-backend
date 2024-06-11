@@ -17,7 +17,6 @@ const authenticateJWT = (req: CustomRequest, res: Response, next: NextFunction) 
             error: "Unauthorized",
         });
     }
-
     try {
         const verify = verifyJWT(token);
         req.user = verify as CustomJWTPayload;
@@ -32,6 +31,7 @@ const authenticateJWT = (req: CustomRequest, res: Response, next: NextFunction) 
         }
         return res.status(401).json({
             error: "Invalid token",
+
         });
     }
 };
