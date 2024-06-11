@@ -77,22 +77,14 @@ chatMessageRouter.post("/:chatRoomID", async (req: CustomRequest, res: Response)
                   content: content,
                   user_id: user_id,
                   chat_id: chatRoomID,
-                  created_at: new Intl.DateTimeFormat("default", {
-                      hour: "numeric",
-                      minute: "numeric",
-                      second: "numeric",
-                  }).format(new Date()),
+                  created_at: new Date(),
                   referenceType: ReferenceSenderType.USER,
               }
             : {
                   content: content,
                   professional_id: user_id,
                   chat_id: chatRoomID,
-                  created_at: new Intl.DateTimeFormat("default", {
-                      hour: "numeric",
-                      minute: "numeric",
-                      second: "numeric",
-                  }).format(new Date()),
+                  created_at: new Date(),
                   referenceType: ReferenceSenderType.PROFESSIONAL,
               };
 
